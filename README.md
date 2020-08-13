@@ -3,7 +3,7 @@
 Note: This is a fork of [USCCACS/GEARS](https://github.com/USCCACS/GEARS/) to add eye tracking for the HTC VIVE Pro Eye. I've left the README mostly the same. Note that this version uses UE4.25 instead of 4.16.
 
 <div align="center">
-     <img src="./images/PlaybackSim1.png" width=90%/>
+     <img src="./README-images/PlaybackSim1.png" width=90%/>
 </div>
 
 ## Overview
@@ -22,7 +22,7 @@ In Unreal GEARS, we showed how one can adapt existing code to run real time simu
 3. Generate Visual Studio files by right clicking the Unreal project file (LammpsVR.uproject) in the LammpsEditor directory.
 
 <div align="center">
-     <img src="./images/generateProjectFiles.png" width=70%/>
+     <img src="./README-images/generateProjectFiles.png" width=70%/>
 </div><br>
 
   *If your computer does not associate .uproject files with the Unreal Editor, then you may have to open up the .uproject file via the Epic Games Launcher first.*
@@ -30,7 +30,7 @@ In Unreal GEARS, we showed how one can adapt existing code to run real time simu
 ## Editor Overview ([Unreal Level Editor](https://docs.unrealengine.com/latest/INT/Engine/UI/LevelEditor/index.html))
 
 <div align="center">
-     <img src="./images/unrealEnvironment.png" width=70%/>
+     <img src="./README-images/unrealEnvironment.png" width=70%/>
 </div><br>
 
 1. [Viewport](https://docs.unrealengine.com/latest/INT/Engine/UI/LevelEditor/Viewports/index.html)
@@ -51,7 +51,7 @@ In Unreal GEARS, we showed how one can adapt existing code to run real time simu
 
 ## How to use LammpsVR Editor
 1. Make sure VR equipment (e.g. Headset, Controllers) is plugged into device and running.
-2. Start LammpsVR.uproject using Unreal Editor 4.16
+2. Start LammpsVR.uproject using Unreal Editor 4.25
 3. In the **Content Browser**, go to Levels/Demo1-RealtimeSim/ for real time simulation demos. Or, go to Levels/Demo2-Animation/ for rerun animations of precomputed simulations.
 4. Select desired level by double clicking the icon.
 5. Press the "Play - VR Preview" option in the top window.
@@ -77,7 +77,7 @@ In Unreal GEARS, we showed how one can adapt existing code to run real time simu
   3. Select a demo level as before, then select the BP_LammpsController in the **World Outlier** window. Go to its details in the **Details** window (pictured below).
 
   <div align="center">
-       <img src="./images/customizationUi.png" width=40%/>
+       <img src="./README-images/customizationUi.png" width=40%/>
   </div><br>
 
   4. Fill out the *Lammps*, *Animation*, and *Particle Management* sections in the window with references to your custom LAMMPS scripts withing the LammpsResource/ directory. This includes file paths, particle number to size and color associations, and even a choice to turn on animation mode. If animation mode is selected, be sure to include details about the animations time step files in the *Animation* section. All time step files must be in the LAMMPS DUMMP format. Additionally, the input script needs to be set up in a particular way. We will post a guide to this soon, so for now refer to our LAMMPS script, *LammpsResource/Scripts/Fracture/rerunscript.in*, as an example.
@@ -110,7 +110,7 @@ For this demo, we display the real time simulation capabilities of GEARS. In the
 * The third example simulates chemical vapor deposition, using both an initial configuration, pair style, and reaxff force field package compiled into our LAMMPS Dll.
 
 ### Demo 2: Animation
-For this demo, we show the capabilities of GEARS to rerun previously computed simulations, effectively acting as an simulation animator in virtual reality. Our demo runs several thousand time steps of a 100,000 particle simulation precomputed on the University of Southern California's high performance computing cluster.
+For this demo, we show the capabilities of GEARS to rerun previously computed simulations, effectively acting as an simulation animator in virtual reality. Our demo runs several thousand time steps of a 100,000 particle simulation precomputed on the University of Southern California's high performance computing cluster. (Currently not working)
 
 Navigate to the FractureWorld level in the Contents windows, double click it, then press play. One can pause and unpause the animation by pressing the face buttons on their Oculus Touch or Vive Motion Controller.
 
