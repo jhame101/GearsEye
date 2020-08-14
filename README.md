@@ -11,15 +11,20 @@ Note: This is a fork of [USCCACS/GEARS](https://github.com/USCCACS/GEARS/) to ad
 In Unreal GEARS, we showed how one can adapt existing code to run real time simulations in virtual reality. With this instance of GEARS, we move past that tedious and error-prone process, and instead integrate the popular molecular dynamics library, [LAMMPS](http://lammps.sandia.gov/), developed by [Sandia National Laboratories](http://www.sandia.gov/). Using our platform, one can run both real time and precomputed LAMMPS simulations in virtual reality. With minimal to no coding, a user can provide their own LAMMPS input script, select the sizes and colors of the particles using our GUI tool, then simply press play to watch it execute in VR.
 
 ## System Requirements
+* [HTC VIVE Pro Eye](https://www.vive.com/eu/product/vive-pro-eye/overview/) with Motion Controllers
 * [Windows 10 OS](https://www.microsoft.com/en-us/windows/) (64-bit Version Recommended)
 * [Unreal Engine 4.25](https://www.unrealengine.com/en-US/what-is-unreal-engine-4)
-* [HTC Vive Pro Eye](https://vr.tobii.com/products/htc-vive-pro-eye/) with Motion Controllers
-  * *Note: SteamVR and the HTC VIVE runtime are also needed to make this work with Unreal*
+* [Visual Studio 2019](https://visualstudio.microsoft.com/vs/)
+* [Steam and SteamVR](http://store.steampowered.com)
+* The [HTC VIVE runtime](https://www.vive.com/us/setup/)
+* The [VIVE eye tracking SDK](https://hub.vive.com/en-US/download) plugin for Unreal (you will need a Vive account)
 
 ## Installation
-1. Install the Epic Games Launcher and Unreal Engine 4 from the [Epic Games](https://www.unrealengine.com/what-is-unreal-engine-4) website. The current project was developed in version 4.25.
-2. Install the appropriate runtime for the [HTC Vive](https://www.vive.com/us/setup/) as well as [Steam and SteamVR](http://store.steampowered.com)
-3. Generate Visual Studio files by right clicking the Unreal project file (LammpsVR.uproject) in the LammpsEditor directory.
+1. Install the Epic Games Launcher and Unreal Engine 4 from the [Epic Games](https://www.unrealengine.com/what-is-unreal-engine-4) website. The current project was developed in version 4.25. Also, install [Visual Studio 2019](https://visualstudio.microsoft.com/vs/)
+2. Install the [HTC Vive runtime](https://www.vive.com/us/setup/) as well as [Steam and SteamVR](http://store.steampowered.com)
+3. Clone this repository (in git bash, run `git clone https://github.com/jhame101/GearsEye.git`). Alternatively, download the zip from github
+4. Follow part 3 of [this guide](https://forum.vive.com/topic/7434-getting-started-with-vrs-foveated-rendering-using-htc-vive-pro-eye-unreal-engine/?ct=1582025406) to set up eye tracking and install the SRanipal plugin.
+5. Generate Visual Studio files by right clicking the Unreal project file (LammpsVR.uproject).
 
 <div align="center">
      <img src="./README-images/generateProjectFiles.png" width=70%/>
@@ -110,9 +115,8 @@ For this demo, we display the real time simulation capabilities of GEARS. In the
 * The third example simulates chemical vapor deposition, using both an initial configuration, pair style, and reaxff force field package compiled into our LAMMPS Dll.
 
 ### Demo 2: Animation
-For this demo, we show the capabilities of GEARS to rerun previously computed simulations, effectively acting as an simulation animator in virtual reality. Our demo runs several thousand time steps of a 100,000 particle simulation precomputed on the University of Southern California's high performance computing cluster. (Currently not working)
+* This demo is currently not working
 
-Navigate to the FractureWorld level in the Contents windows, double click it, then press play. One can pause and unpause the animation by pressing the face buttons on their Oculus Touch or Vive Motion Controller.
+For this demo, we show the capabilities of GEARS to rerun previously computed simulations, effectively acting as an simulation animator in virtual reality. Our demo runs several thousand time steps of a 100,000 particle simulation precomputed on the University of Southern California's high performance computing cluster.
 
-### Code Architecture
-To be added shortly.
+Navigate to the FractureWorld level in the Contents windows, double click it, then press play. One can pause and unpause the animation by pressing the face buttons on their Vive Motion Controller.
