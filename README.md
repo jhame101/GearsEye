@@ -24,6 +24,16 @@ In Unreal GEARS, we showed how one can adapt existing code to run real time simu
 2. Install the [HTC Vive runtime](https://www.vive.com/us/setup/) as well as [Steam and SteamVR](http://store.steampowered.com)
 3. Clone this repository (in git bash, run `git clone https://github.com/jhame101/GearsEye.git`). Alternatively, download the zip from github
 4. Follow part 3 of [this guide](https://forum.vive.com/topic/7434-getting-started-with-vrs-foveated-rendering-using-htc-vive-pro-eye-unreal-engine/?ct=1582025406) to set up eye tracking and install the SRanipal plugin.
+	* On top of the error mentioned at step 13, there will also be an error in both `SRanipal_AvatarEyeSample.cpp` and `SRanipal_AvatarEyeSample_v2.cpp`. To fix that, replace both instances of
+	```cpp
+	ModelGazeOrigin = EyeAnchors[eye]->RelativeLocation;
+	ModelGazeTarget = EyeAnchors[eye]->RelativeLocation + GazeDirectionCombinedLocal;
+	```
+	with
+	```cpp
+	ModelGazeOrigin = EyeAnchors[eye]->GetRelativeLocation();
+	ModelGazeTarget = EyeAnchors[eye]->GetRelativeLocation() + GazeDirectionCombinedLocal;
+	```
 5. Generate Visual Studio files by right clicking the Unreal project file (LammpsVR.uproject).
 
 <div align="center">
