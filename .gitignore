@@ -80,5 +80,6 @@ DerivedDataCache/*
 # Lammps Dump Files
 *.dump
 
-# The SRanipal plugin (because of licensing). Download SRanipal_SDK_1.1.0.1.zip at https://hub.vive.com/en-US/download (you will need a Vive account, and you may need to disable blocking of 3rd party cookies - I hate it, but it's the only way)
+# The SRanipal plugin (because of licensing). Follow instructions in README to replace.
 Plugins/SRanipal
+Content/SRanipalContent

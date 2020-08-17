@@ -20,8 +20,8 @@ In Unreal GEARS, we showed how one can adapt existing code to run real time simu
 * The [VIVE eye tracking SDK](https://hub.vive.com/en-US/download) plugin for Unreal (you will need a Vive account)
 
 ## Installation
-1. Install the Epic Games Launcher and Unreal Engine 4 from the [Epic Games](https://www.unrealengine.com/what-is-unreal-engine-4) website. The current project was developed in version 4.25. Also, install [Visual Studio 2019](https://visualstudio.microsoft.com/vs/)
-2. Install the [HTC Vive runtime](https://www.vive.com/us/setup/) as well as [Steam and SteamVR](http://store.steampowered.com)
+1. Install the Epic Games Launcher and Unreal Engine 4 from the [Epic Games](https://www.unrealengine.com/what-is-unreal-engine-4) website. The current project was developed in version 4.25. Also install [Visual Studio 2019](https://visualstudio.microsoft.com/vs/) (if you haven't already)
+2. Install the [HTC Vive runtime](https://www.vive.com/us/setup/) as well as [Steam and SteamVR](http://store.steampowered.com) (if you haven't already)
 3. Clone this repository (in git bash, run `git clone https://github.com/jhame101/GearsEye.git`). Alternatively, download the zip from github
 4. Follow part 3 of [this guide](https://forum.vive.com/topic/7434-getting-started-with-vrs-foveated-rendering-using-htc-vive-pro-eye-unreal-engine/?ct=1582025406) to set up eye tracking and install the SRanipal plugin.
 	* On top of the error mentioned at step 13, there will also be an error in both `SRanipal_AvatarEyeSample.cpp` and `SRanipal_AvatarEyeSample_v2.cpp`. To fix that, replace both instances of
