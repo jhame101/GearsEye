@@ -30,9 +30,6 @@ protected:
 	USceneComponent* DefaultSceneRoot;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USpotLightComponent* SpotLight;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCapsuleComponent* Capsule;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -40,6 +37,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* HeadsetCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USpotLightComponent* HeadLamp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UCameraComponent* RecordingCamera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* EyeTrackMesh;
@@ -57,7 +60,7 @@ protected:
 	UStaticMeshComponent* Laser_R;
 
 	UPROPERTY(EditDefaultsOnly)
-	float EyeTrackRadius = 3.f;
+	float EyeTrackRadius = 3000.f;
 
 public:	
 	// Called every frame

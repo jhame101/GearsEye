@@ -40,7 +40,7 @@ AParticle::ConstructorHelper() {
 	m_Mesh = CreateDefaultSubobject<UHierarchicalInstancedStaticMeshComponent>(TEXT("HierarchicalInstancedStaticMesh"));
 	m_Mesh->SetMobility(EComponentMobility::Stationary);
 	m_Mesh->SetGenerateOverlapEvents(false);
-	m_Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	m_Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	m_Mesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
 	m_Mesh->CanCharacterStepUpOn = TEnumAsByte<ECanBeCharacterBase>(false);
 	m_Mesh->SetCastShadow(false);
