@@ -27,39 +27,39 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USceneComponent* DefaultSceneRoot;
+		USceneComponent* DefaultSceneRoot;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USpotLightComponent* SpotLight;
+		UCapsuleComponent* Capsule;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UCapsuleComponent* Capsule;
+		USceneComponent* VRRoot;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USceneComponent* VRRoot;
+		UCameraComponent* HeadsetCamera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UCameraComponent* HeadsetCamera;
+		USpotLightComponent* HeadLamp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UStaticMeshComponent* EyeTrackMesh;
+		UStaticMeshComponent* EyeTrackMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UMotionControllerComponent* ViveController_L;
+		UMotionControllerComponent* ViveController_L;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UStaticMeshComponent* Laser_L;
+		UStaticMeshComponent* Laser_L;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UMotionControllerComponent* ViveController_R;
+		UMotionControllerComponent* ViveController_R;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UStaticMeshComponent* Laser_R;
+		UStaticMeshComponent* Laser_R;
 
 	UPROPERTY(EditDefaultsOnly)
-	float EyeTrackRadius = 3.f;
+		float EyeTrackRadius = 30.f;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
