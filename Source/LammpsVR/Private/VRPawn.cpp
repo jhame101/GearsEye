@@ -9,6 +9,8 @@
 #include "MotionControllerComponent.h" 	
 #include "SRanipal_FunctionLibrary_Eye.h"
 
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 AVRPawn::AVRPawn()
 {
@@ -64,7 +66,6 @@ void AVRPawn::Tick(float DeltaTime)
 
 	FVector EyeTrackOrigin, EyeTrackDirection;
 
-
 	if (USRanipal_FunctionLibrary_Eye::GetGazeRay(GazeIndex::COMBINE, EyeTrackOrigin, EyeTrackDirection)) {
 		EyeTrackMesh->SetRelativeLocation(EyeTrackOrigin + EyeTrackRadius * EyeTrackDirection);
 	}
@@ -83,3 +84,17 @@ void AVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+FVector2D AVRPawn::GetGazeLocationOnScreen() const
+{
+	FVector EyeTrackOrigin, EyeTrackDirection;
+
+	if (USRanipal_FunctionLibrary_Eye::GetGazeRay(GazeIndex::COMBINE, EyeTrackOrigin, EyeTrackDirection)) {
+		auto PlayerController = Cast<APlayerController>(GetController()); if (!PlayerController) return FVector2D();
+		FVector WorldPosition = GetActorLocation() + EyeTrackOrigin + 100*EyeTrackDirection;
+		FVector2D ScreenLocation;
+		UGameplayStatics::ProjectWorldToScreen(PlayerController, WorldPosition, ScreenLocation);
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ScreenLocation.ToString());
+		return ScreenLocation;
+	}
+	return FVector2D();
+}
