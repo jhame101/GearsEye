@@ -9,8 +9,6 @@
 #include "MotionControllerComponent.h" 	
 #include "SRanipal_FunctionLibrary_Eye.h"
 
-#include "Kismet/GameplayStatics.h"
-
 // Sets default values
 AVRPawn::AVRPawn()
 {
@@ -64,16 +62,19 @@ void AVRPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FVector EyeTrackOrigin, EyeTrackDirection;
-
-	if (USRanipal_FunctionLibrary_Eye::GetGazeRay(GazeIndex::COMBINE, EyeTrackOrigin, EyeTrackDirection)) {
-		EyeTrackMesh->SetRelativeLocation(EyeTrackOrigin + EyeTrackRadius * EyeTrackDirection);
-	}
-
+	//Keeping the actor location the same as the player location. Maybe turn into a seperate function later?
 	FVector NewCameraOffset = HeadsetCamera->GetComponentLocation() - GetActorLocation();
 	NewCameraOffset.X -= 10;
 	AddActorWorldOffset(NewCameraOffset);
 	VRRoot->AddWorldOffset(-NewCameraOffset);
+
+	//TEMP section to set the location of a SM directly where the player is looking
+	FVector EyeTrackOrigin, EyeTrackDirection;
+	if (USRanipal_FunctionLibrary_Eye::GetGazeRay(GazeIndex::COMBINE, EyeTrackOrigin, EyeTrackDirection)) {
+		EyeTrackMesh->SetRelativeLocation(EyeTrackOrigin + EyeTrackRadius * EyeTrackDirection);
+	}
+
+	//TODO: call function to update location of eye track overlay
 
 }
 
@@ -92,8 +93,18 @@ FVector2D AVRPawn::GetGazeLocationOnScreen() const
 		auto PlayerController = Cast<APlayerController>(GetController()); if (!PlayerController) return FVector2D();
 		FVector WorldPosition = GetActorLocation() + EyeTrackOrigin + 100*EyeTrackDirection;
 		FVector2D ScreenLocation;
-		UGameplayStatics::ProjectWorldToScreen(PlayerController, WorldPosition, ScreenLocation);
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *ScreenLocation.ToString());
+		PlayerController->ProjectWorldLocationToScreen(WorldPosition, ScreenLocation);
+
+		//Convert to UV coords
+		int32 VPSizeX, VPSizeY;
+		PlayerController->GetViewportSize(VPSizeX, VPSizeY);
+		ScreenLocation.X /= VPSizeX;
+		ScreenLocation.Y /= VPSizeY;
+
+		// UE_LOG(LogTemp, Warning, TEXT("%s"), *ScreenLocation.ToString());
+		// UE_LOG(LogTemp, Warning, TEXT("%d. %d"), VPSizeX, VPSizeY);
+		UE_LOG(LogTemp, Warning, TEXT("EyeTrackOrigin: %s"), *EyeTrackOrigin.ToString());
+
 		return ScreenLocation;
 	}
 	return FVector2D();
