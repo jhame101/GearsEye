@@ -7,7 +7,7 @@
 #include "VRPawn.generated.h"
 
 class UStaticMeshComponent;
-class USceneComponent;
+class USceneCaptureComponent2D;
 class USpotLightComponent;
 class UCapsuleComponent;
 class UCameraComponent;
@@ -27,37 +27,41 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-		USceneComponent* DefaultSceneRoot;
+	USceneComponent* DefaultSceneRoot;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-		UCapsuleComponent* Capsule;
+	UCapsuleComponent* Capsule;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-		USceneComponent* VRRoot;
+	USceneComponent* VRRoot;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-		UCameraComponent* HeadsetCamera;
+	UCameraComponent* HeadsetCamera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-		USpotLightComponent* HeadLamp;
+	USpotLightComponent* HeadLamp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-		UStaticMeshComponent* EyeTrackMesh;
+	USceneCaptureComponent2D* ExternalCamera;
+
+	//TODO: Remove
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UStaticMeshComponent* EyeTrackMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-		UMotionControllerComponent* ViveController_L;
+	UMotionControllerComponent* ViveController_L;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-		UStaticMeshComponent* Laser_L;
+	UStaticMeshComponent* Laser_L;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-		UMotionControllerComponent* ViveController_R;
+	UMotionControllerComponent* ViveController_R;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-		UStaticMeshComponent* Laser_R;
+	UStaticMeshComponent* Laser_R;
 
 	UPROPERTY(EditDefaultsOnly)
-		float EyeTrackRadius = 30.f;
+	float EyeTrackRadius = 30.f;
 
 public:
 	// Called every frame

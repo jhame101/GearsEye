@@ -4,6 +4,7 @@
 #include "VRPawn.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SceneCaptureComponent2D.h"
 #include "Components/SpotLightComponent.h"
 #include "Engine/World.h"
 #include "MotionControllerComponent.h" 	
@@ -30,6 +31,10 @@ AVRPawn::AVRPawn()
 	HeadLamp = CreateDefaultSubobject<USpotLightComponent>(TEXT("Spot Light"));
 	HeadLamp->SetupAttachment(HeadsetCamera);
 
+	ExternalCamera = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("External Camera"));
+	ExternalCamera->SetupAttachment(HeadsetCamera);
+
+	// TODO: Remove
 	EyeTrackMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Eye Tracking Mesh"));
 	EyeTrackMesh->SetupAttachment(HeadsetCamera);
 	EyeTrackMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -89,23 +94,35 @@ FVector2D AVRPawn::GetGazeLocationOnScreen() const
 {
 	FVector EyeTrackOrigin, EyeTrackDirection;
 
-	if (USRanipal_FunctionLibrary_Eye::GetGazeRay(GazeIndex::COMBINE, EyeTrackOrigin, EyeTrackDirection)) {
-		auto PlayerController = Cast<APlayerController>(GetController()); if (!PlayerController) return FVector2D();
-		FVector WorldPosition = GetActorLocation() + EyeTrackOrigin + 100*EyeTrackDirection;
-		FVector2D ScreenLocation;
-		PlayerController->ProjectWorldLocationToScreen(WorldPosition, ScreenLocation);
+	if (!USRanipal_FunctionLibrary_Eye::GetGazeRay(GazeIndex::COMBINE, EyeTrackOrigin, EyeTrackDirection)) return FVector2D();
+	if (!ensure(ExternalCamera)) return FVector2D();
 
-		//Convert to UV coords
-		int32 VPSizeX, VPSizeY;
-		PlayerController->GetViewportSize(VPSizeX, VPSizeY);
-		ScreenLocation.X /= VPSizeX;
-		ScreenLocation.Y /= VPSizeY;
+	// auto PlayerController = Cast<APlayerController>(GetController()); if (!PlayerController) return FVector2D();
 
-		// UE_LOG(LogTemp, Warning, TEXT("%s"), *ScreenLocation.ToString());
-		// UE_LOG(LogTemp, Warning, TEXT("%d. %d"), VPSizeX, VPSizeY);
-		UE_LOG(LogTemp, Warning, TEXT("EyeTrackOrigin: %s"), *EyeTrackOrigin.ToString());
+	FVector RelativePosition = EyeTrackOrigin + 1000*EyeTrackDirection;		//Assuming that ExternalCamera has the same transform as HeadsetCamera
+	FRotator RelativeAngle = RelativePosition.Rotation();
 
-		return ScreenLocation;
-	}
-	return FVector2D();
+	// Rotation in Z corresponds to x on screen, Y rotation corresponds to Y
+	FVector2D ScreenLocation = (RelativeAngle.Yaw, RelativeAngle.Pitch);
+
+	float FOVx = ExternalCamera->FOVAngle;
+	float FOVy = FOVx * 9 / 16;	//Assuming 16:9 aspect ratio (which it is by default)
+
+	//Convert to UF coords
+	// ScreenLocation.X /= FOVx;
+	ScreenLocation.X = 0.5;		//TODO: set properly
+	ScreenLocation.Y = 0.5 - (ScreenLocation.Y / (FOVy * 1.1875));		//Don't ask me why that extra correction of 1.1875 is needed, it just is. Maybe I have the aspect ratio wrong?
+
+	// PlayerController->ProjectWorldLocationToScreen(WorldPosition, ScreenLocation);
+
+	/* //Convert to UV coords
+	int32 VPSizeX, VPSizeY;
+	PlayerController->GetViewportSize(VPSizeX, VPSizeY);
+	ScreenLocation.X /= VPSizeX;
+	ScreenLocation.Y /= VPSizeY; */
+
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *ScreenLocation.ToString());
+	// UE_LOG(LogTemp, Warning, TEXT("%d. %d"), VPSizeX, VPSizeY);
+
+	return ScreenLocation;
 }
