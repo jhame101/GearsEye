@@ -7,6 +7,7 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Components/SpotLightComponent.h"
 #include "Engine/World.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "MotionControllerComponent.h" 	
 #include "SRanipal_FunctionLibrary_Eye.h"
 
@@ -103,15 +104,16 @@ FVector2D AVRPawn::GetGazeLocationOnScreen() const
 	FRotator RelativeAngle = RelativePosition.Rotation();
 
 	// Rotation in Z corresponds to x on screen, Y rotation corresponds to Y
-	FVector2D ScreenLocation = (RelativeAngle.Yaw, RelativeAngle.Pitch);
+	FVector2D ScreenLocation = (RelativeAngle.Roll, RelativeAngle.Pitch);		//Might need to think of another way to do this; the X isn't working very well
 
 	float FOVx = ExternalCamera->FOVAngle;
-	float FOVy = FOVx * 9 / 16;	//Assuming 16:9 aspect ratio (which it is by default)
+	float FOVy = 2 * UKismetMathLibrary::Atan(UKismetMathLibrary::Tan(FOVx * UKismetMathLibrary::GetPI() / 180 / 2) * 9 / 16) * 180 / UKismetMathLibrary::GetPI();	//Assuming 16:9 aspect ratio (which it is by default). Formula provided by: https://www.reddit.com/r/Planetside/comments/1xl1z5/brief_table_for_calculating_fieldofview_vertical/
 
+	UE_LOG(LogTemp, Warning, TEXT("%f"), ScreenLocation.X);
 	//Convert to UF coords
 	// ScreenLocation.X /= FOVx;
-	ScreenLocation.X = 0.5;		//TODO: set properly
-	ScreenLocation.Y = 0.5 - (ScreenLocation.Y / (FOVy * 1.1875));		//Don't ask me why that extra correction of 1.1875 is needed, it just is. Maybe I have the aspect ratio wrong?
+	ScreenLocation.X = 0.5;		// TODO: set properly
+	ScreenLocation.Y = 0.5 - (ScreenLocation.Y / (FOVy));
 
 	// PlayerController->ProjectWorldLocationToScreen(WorldPosition, ScreenLocation);
 
@@ -121,7 +123,7 @@ FVector2D AVRPawn::GetGazeLocationOnScreen() const
 	ScreenLocation.X /= VPSizeX;
 	ScreenLocation.Y /= VPSizeY; */
 
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *ScreenLocation.ToString());
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *ScreenLocation.ToString());
 	// UE_LOG(LogTemp, Warning, TEXT("%d. %d"), VPSizeX, VPSizeY);
 
 	return ScreenLocation;
