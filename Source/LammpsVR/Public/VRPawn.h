@@ -19,13 +19,19 @@ class LAMMPSVR_API AVRPawn : public APawn
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
 	AVRPawn();
 
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintPure)
+	FVector2D GetGazeLocationOnScreen() const;
+
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* DefaultSceneRoot;
 
@@ -56,17 +62,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* Laser_R;
 
-	UPROPERTY(EditDefaultsOnly)
-	float EyeTrackRadius = 30.f;
+	UPROPERTY(EditAnywhere)
+	UMaterialInterface* PostProcessMaterial;
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+private:
+	UPROPERTY()
+	UMaterialInstanceDynamic* DynamicPPM;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UFUNCTION(BlueprintPure)
-	FVector2D GetGazeLocationOnScreen() const;
+	void UpdateEyeTrackInfo();
 
 };

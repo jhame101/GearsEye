@@ -8,6 +8,7 @@
 #include "Components/SpotLightComponent.h"
 #include "Engine/World.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "MotionControllerComponent.h" 	
 #include "SRanipal_FunctionLibrary_Eye.h"
 
@@ -55,6 +56,9 @@ AVRPawn::AVRPawn()
 void AVRPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	DynamicPPM = UMaterialInstanceDynamic::Create(PostProcessMaterial, this);
+	ExternalCamera->AddOrUpdateBlendable(DynamicPPM, 1000.f);
 
 }
 
@@ -69,7 +73,7 @@ void AVRPawn::Tick(float DeltaTime)
 	AddActorWorldOffset(NewCameraOffset);
 	VRRoot->AddWorldOffset(-NewCameraOffset);
 
-	//TODO: call function to update location of eye track overlay
+	UpdateEyeTrackInfo();
 
 }
 
@@ -95,9 +99,9 @@ FVector2D AVRPawn::GetGazeLocationOnScreen() const
 	FRotator RelativeAngle = RelativePosition.Rotation();
 
 	// Rotation in Z corresponds to x on screen, Y rotation corresponds to Y
-	FVector2D ScreenLocation = (RelativeAngle.Yaw, RelativeAngle.Pitch);
+	FVector2D ScreenLocation;
 	
-	//Convert to UF coords
+	//Convert to UV coords
 	ScreenLocation.X = 0.5 + (RelativeAngle.Yaw / (FOVx * 1.11));
 	ScreenLocation.Y = 0.5 - (1.11 * RelativeAngle.Pitch / (FOVy));		//Not sure why the extra correction is needed; maybe I have something wrong
 
@@ -105,4 +109,11 @@ FVector2D AVRPawn::GetGazeLocationOnScreen() const
 	// UE_LOG(LogTemp, Warning, TEXT("Roll: %f, Pitch: %f, Yaw: %f    hFOV: %f, vFOV: %f    UVx: %f, UVy: %f"), RelativeAngle.Roll, RelativeAngle.Pitch, RelativeAngle.Yaw, FOVx, FOVy, ScreenLocation.X, ScreenLocation.Y);
 
 	return ScreenLocation;
+}
+
+void AVRPawn::UpdateEyeTrackInfo() {
+	FVector2D TwoDCoordinates = GetGazeLocationOnScreen();
+	DynamicPPM->SetVectorParameterValue(TEXT("Centre Coordinates"), FLinearColor(TwoDCoordinates.X, TwoDCoordinates.Y, 0.f, 0.f));
+
+	DynamicPPM->SetScalarParameterValue(TEXT("Radius"), 0.03f);
 }
