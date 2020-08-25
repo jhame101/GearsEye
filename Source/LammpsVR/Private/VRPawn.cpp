@@ -35,11 +35,6 @@ AVRPawn::AVRPawn()
 	ExternalCamera = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("External Camera"));
 	ExternalCamera->SetupAttachment(HeadsetCamera);
 
-	// TODO: Remove
-	EyeTrackMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Eye Tracking Mesh"));
-	EyeTrackMesh->SetupAttachment(HeadsetCamera);
-	EyeTrackMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 	ViveController_L = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Left Vive Controller"));
 	ViveController_L->SetupAttachment(VRRoot);
 
@@ -74,12 +69,6 @@ void AVRPawn::Tick(float DeltaTime)
 	AddActorWorldOffset(NewCameraOffset);
 	VRRoot->AddWorldOffset(-NewCameraOffset);
 
-	//TEMP section to set the location of a SM directly where the player is looking
-	FVector EyeTrackOrigin, EyeTrackDirection;
-	if (USRanipal_FunctionLibrary_Eye::GetGazeRay(GazeIndex::COMBINE, EyeTrackOrigin, EyeTrackDirection)) {
-		EyeTrackMesh->SetRelativeLocation(EyeTrackOrigin + EyeTrackRadius * EyeTrackDirection);
-	}
-
 	//TODO: call function to update location of eye track overlay
 
 }
@@ -98,33 +87,22 @@ FVector2D AVRPawn::GetGazeLocationOnScreen() const
 	if (!USRanipal_FunctionLibrary_Eye::GetGazeRay(GazeIndex::COMBINE, EyeTrackOrigin, EyeTrackDirection)) return FVector2D();
 	if (!ensure(ExternalCamera)) return FVector2D();
 
-	// auto PlayerController = Cast<APlayerController>(GetController()); if (!PlayerController) return FVector2D();
+	// Getting the field of view of the external camera
+	float FOVx = ExternalCamera->FOVAngle;
+	float FOVy = 2 * UKismetMathLibrary::Atan(UKismetMathLibrary::Tan(FOVx * UKismetMathLibrary::GetPI() / 180 / 2) * 9 / 16) * 180 / UKismetMathLibrary::GetPI();	//Assuming 16:9 aspect ratio (which it is by default). Formula provided by: https://www.reddit.com/r/Planetside/comments/1xl1z5/brief_table_for_calculating_fieldofview_vertical/
 
 	FVector RelativePosition = EyeTrackOrigin + 1000*EyeTrackDirection;		//Assuming that ExternalCamera has the same transform as HeadsetCamera
 	FRotator RelativeAngle = RelativePosition.Rotation();
 
 	// Rotation in Z corresponds to x on screen, Y rotation corresponds to Y
-	FVector2D ScreenLocation = (RelativeAngle.Roll, RelativeAngle.Pitch);		//Might need to think of another way to do this; the X isn't working very well
-
-	float FOVx = ExternalCamera->FOVAngle;
-	float FOVy = 2 * UKismetMathLibrary::Atan(UKismetMathLibrary::Tan(FOVx * UKismetMathLibrary::GetPI() / 180 / 2) * 9 / 16) * 180 / UKismetMathLibrary::GetPI();	//Assuming 16:9 aspect ratio (which it is by default). Formula provided by: https://www.reddit.com/r/Planetside/comments/1xl1z5/brief_table_for_calculating_fieldofview_vertical/
-
-	UE_LOG(LogTemp, Warning, TEXT("%f"), ScreenLocation.X);
+	FVector2D ScreenLocation = (RelativeAngle.Yaw, RelativeAngle.Pitch);
+	
 	//Convert to UF coords
-	// ScreenLocation.X /= FOVx;
-	ScreenLocation.X = 0.5;		// TODO: set properly
-	ScreenLocation.Y = 0.5 - (ScreenLocation.Y / (FOVy));
+	ScreenLocation.X = 0.5 + (RelativeAngle.Yaw / (FOVx * 1.11));
+	ScreenLocation.Y = 0.5 - (1.11 * RelativeAngle.Pitch / (FOVy));		//Not sure why the extra correction is needed; maybe I have something wrong
 
-	// PlayerController->ProjectWorldLocationToScreen(WorldPosition, ScreenLocation);
-
-	/* //Convert to UV coords
-	int32 VPSizeX, VPSizeY;
-	PlayerController->GetViewportSize(VPSizeX, VPSizeY);
-	ScreenLocation.X /= VPSizeX;
-	ScreenLocation.Y /= VPSizeY; */
-
-	// UE_LOG(LogTemp, Warning, TEXT("%s"), *ScreenLocation.ToString());
-	// UE_LOG(LogTemp, Warning, TEXT("%d. %d"), VPSizeX, VPSizeY);
+	// TODO: Remove
+	// UE_LOG(LogTemp, Warning, TEXT("Roll: %f, Pitch: %f, Yaw: %f    hFOV: %f, vFOV: %f    UVx: %f, UVy: %f"), RelativeAngle.Roll, RelativeAngle.Pitch, RelativeAngle.Yaw, FOVx, FOVy, ScreenLocation.X, ScreenLocation.Y);
 
 	return ScreenLocation;
 }
