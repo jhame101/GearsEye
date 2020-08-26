@@ -1,30 +1,31 @@
-# GEARS in Unreal Engine 4.25 (with LAMMPS)
 
-Note: This is a fork of [USCCACS/GEARS](https://github.com/USCCACS/GEARS/) to add eye tracking for the HTC VIVE Pro Eye. I've left the README mostly the same. Note that this version uses UE4.25 instead of 4.16.
+# GEARS in Unreal Engine 4.25 (with LAMMPS and eye tracking)
+
+Note: This is a fork of [USCCACS/GEARS](https://github.com/USCCACS/GEARS/) to add eye tracking for the HTC VIVE Pro Eye. Note that this version uses UE4.25 instead of 4.16.
 
 <div align="center">
-     <img src="./README-images/PlaybackSim1.png" width=90%/>
+     <img src="./README-images/Demo3.png" width=90%/>
 </div>
 
 ## Overview
 
-In Unreal GEARS, we showed how one can adapt existing code to run real time simulations in virtual reality. With this instance of GEARS, we move past that tedious and error-prone process, and instead integrate the popular molecular dynamics library, [LAMMPS](http://lammps.sandia.gov/), developed by [Sandia National Laboratories](http://www.sandia.gov/). Using our platform, one can run both real time and precomputed LAMMPS simulations in virtual reality. With minimal to no coding, a user can provide their own LAMMPS input script, select the sizes and colors of the particles using our GUI tool, then simply press play to watch it execute in VR.
+GEARS is a program that visualizes the molecular dynamics library [LAMMPS](http://lammps.sandia.gov/), developed by [Sandia National Laboratories](http://www.sandia.gov/), in virtual reality. Because of this, it offers the ability to run custom LAMMPS scripts and also comes with a few demos. Look at [USCCACS/GEARS](https://github.com/USCCACS/GEARS/) for more GEARS-specific information. This fork, which works with the HTC VIVE Pro Eye headset, adds a circle on top of the preview window that shows where the user is looking.
 
 ## System Requirements
 * [HTC VIVE Pro Eye](https://www.vive.com/eu/product/vive-pro-eye/overview/) with Motion Controllers
 * [Windows 10 OS](https://www.microsoft.com/en-us/windows/) (64-bit Version Recommended)
 * [Unreal Engine 4.25](https://www.unrealengine.com/en-US/what-is-unreal-engine-4)
 * [Visual Studio 2019](https://visualstudio.microsoft.com/vs/)
-* [Steam and SteamVR](http://store.steampowered.com)
 * The [HTC VIVE runtime](https://www.vive.com/us/setup/)
-* The [VIVE eye tracking SDK](https://hub.vive.com/en-US/download) plugin for Unreal (you will need a Vive account)
+* [Steam and SteamVR](http://store.steampowered.com)
+* The [VIVE eye tracking SDK](https://developer.vive.com/resources/knowledgebase/vive-sranipal-sdk/) plugin for Unreal (you will need a Vive account - see installation instructions)
 
 ## Installation
-1. Install the Epic Games Launcher and Unreal Engine 4 from the [Epic Games](https://www.unrealengine.com/what-is-unreal-engine-4) website. The current project was developed in version 4.25. Also install [Visual Studio 2019](https://visualstudio.microsoft.com/vs/) (if you haven't already)
+1. Install the Epic Games Launcher and Unreal Engine 4 from the [Epic Games](https://www.unrealengine.com/what-is-unreal-engine-4) website. The current project was developed in version 4.25. Also install [Visual Studio 2019](https://visualstudio.microsoft.com/vs/) including the packages for game development with C++ (if you haven't already)
 2. Install the [HTC Vive runtime](https://www.vive.com/us/setup/) as well as [Steam and SteamVR](http://store.steampowered.com) (if you haven't already)
-3. Clone this repository (in git bash, run `git clone https://github.com/jhame101/GearsEye.git`). Alternatively, download the zip from github
-4. Follow part 3 of [this guide](https://forum.vive.com/topic/7434-getting-started-with-vrs-foveated-rendering-using-htc-vive-pro-eye-unreal-engine/?ct=1582025406) to set up eye tracking and install the SRanipal plugin.
-	* On top of the error mentioned at step 13, there will also be an error in both `SRanipal_AvatarEyeSample.cpp` and `SRanipal_AvatarEyeSample_v2.cpp`. To fix that, replace both instances of
+3. Clone this repository (`git clone https://github.com/jhame101/GearsEye.git`). Alternatively, download the zip from github
+4. Follow part 3 of [this guide](https://forum.vive.com/topic/7434-getting-started-with-vrs-foveated-rendering-using-htc-vive-pro-eye-unreal-engine/?ct=1582025406) to set up eye tracking and install the SRanipal plugin. You may need to disable privacy and security plugins or use a less secure browser  to do the actual downloads because the website is badly designed.
+	* The error mentioned at step 13 will show up, and there will also be an error in both `SRanipal_AvatarEyeSample.cpp` and `SRanipal_AvatarEyeSample_v2.cpp`. To fix that, replace both instances of
 	```cpp
 	ModelGazeOrigin = EyeAnchors[eye]->RelativeLocation;
 	ModelGazeTarget = EyeAnchors[eye]->RelativeLocation + GazeDirectionCombinedLocal;
@@ -36,47 +37,20 @@ In Unreal GEARS, we showed how one can adapt existing code to run real time simu
 	```
 5. Generate Visual Studio files by right clicking the Unreal project file (LammpsVR.uproject).
 
-<div align="center">
-     <img src="./README-images/generateProjectFiles.png" width=70%/>
-</div><br>
-
   *If your computer does not associate .uproject files with the Unreal Editor, then you may have to open up the .uproject file via the Epic Games Launcher first.*
-
-## Editor Overview ([Unreal Level Editor](https://docs.unrealengine.com/latest/INT/Engine/UI/LevelEditor/index.html))
-
-<div align="center">
-     <img src="./README-images/unrealEnvironment.png" width=70%/>
-</div><br>
-
-1. [Viewport](https://docs.unrealengine.com/latest/INT/Engine/UI/LevelEditor/Viewports/index.html)
-
-  This is your means of previewing the virtual environment in which your LAMMPS simulation will run. When selected, a level will appear in this window. You can then place objects in the environment or fly around with the mouse and arrow keys. Objects in the currently selected level appear in the World Outliner window (3).
-
-2. [Content Browser](https://docs.unrealengine.com/latest/INT/Engine/Content/index.html)
-
-  This is the file explorer for C++ files, Unreal Blueprints, Materials, etc. associated with your project and/or simulation. Make sure any LAMMPS related resources (e.g. input scripts, data/dump files) are here in the Content/LammpsResource/ folder.
-
-3. [World Outliner](https://docs.unrealengine.com/latest/INT/Engine/UI/LevelEditor/SceneOutliner/index.html)
-
-  This is the list of objects/Blueprints in the currently selected level (this level is previewed in the Viewport).
-
-4. [Details](https://docs.unrealengine.com/latest/INT/Engine/UI/LevelEditor/Details/index.html)
-
-  This window describes the details of a selected item in the World Outliner window (3). When a LammpsController Blueprint in the current level is selected, this is where you can edit the input LAMMPS script, LAMMPS animation specifics (e.g. initial time step, animation step size), and the target LAMMPS dll that runs each simulation step.
+  
+* See the [USCCACS/GEARS](https://github.com/USCCACS/GEARS/) Unreal README for an introduction to the Unreal editor
 
 ## How to use LammpsVR Editor
-1. Make sure VR equipment (e.g. Headset, Controllers) is plugged into device and running.
-2. Start LammpsVR.uproject using Unreal Editor 4.25
-3. In the **Content Browser**, go to Levels/Demo1-RealtimeSim/ for real time simulation demos. Or, go to Levels/Demo2-Animation/ for rerun animations of precomputed simulations.
-4. Select desired level by double clicking the icon.
-5. Press the "Play - VR Preview" option in the top window.
-6. Put on headset.
-7. Enjoy :)
+1. Start LammpsVR.uproject using Unreal Editor 4.25. Ensure that SteamVR has also started and all equipment (Vive Pro Eye, controllers) is connected
+2. Start the SR_Runtime application as administrator
+3. In the Content Browser, go to Levels/Demo1-RealtimeSim/ for real time simulation demos. Alternatively, just use the default level and try other ones using number keys.
+4. Press the "Play - VR Preview" option in the top window, and put on the headset.
 
 ### Controls:
-  Using motion controller, point green laser in direction that you want to move. Press either the right or left trigger buttons on the motion controllers to move forward in the direction that the green laser is pointing to.
+  Using motion controller, point green laser in direction that you want to move. Press either the right or left trigger buttons on the motion controllers to move in the direction that controller's green laser is pointing.
 
-  To pause the simulation (whether real time or animation), press one of the face buttons on the motion controller (for HTC Vive motion controllers, this is restricted to the circular directional pad on the front).
+  To pause the simulation (whether real time or animation), click the circular directional pad.
 
   To exit your current level, press the ESC key on the keyboard.
 
@@ -130,3 +104,7 @@ For this demo, we display the real time simulation capabilities of GEARS. In the
 For this demo, we show the capabilities of GEARS to rerun previously computed simulations, effectively acting as an simulation animator in virtual reality. Our demo runs several thousand time steps of a 100,000 particle simulation precomputed on the University of Southern California's high performance computing cluster.
 
 Navigate to the FractureWorld level in the Contents windows, double click it, then press play. One can pause and unpause the animation by pressing the face buttons on their Vive Motion Controller.
+
+<div align="center">
+     <img src="./README-images/Demo1.png" width=90%/>
+</div>
