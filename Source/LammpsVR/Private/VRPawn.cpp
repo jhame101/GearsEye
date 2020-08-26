@@ -15,11 +15,11 @@
 // Sets default values
 AVRPawn::AVRPawn()
 {
-	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Component setup
 	DefaultSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Default Scene Root"));
-	RootComponent = DefaultSceneRoot;
+	SetRootComponent(DefaultSceneRoot);
 
 	Capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
 	Capsule->SetupAttachment(RootComponent);
@@ -52,29 +52,28 @@ AVRPawn::AVRPawn()
 
 }
 
-// Called when the game starts or when spawned
 void AVRPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Creating and applying the dynamic post process material
 	DynamicPPM = UMaterialInstanceDynamic::Create(PostProcessMaterial, this);
 	ExternalCamera->AddOrUpdateBlendable(DynamicPPM, 1000.f);
 
+	// Setting the FOV of the external camera. NOTE: if you want to be able to adjust the FOV during play, move this somewhere else
+	ExternalCameraFOV.X = ExternalCamera->FOVAngle;
+	ExternalCameraFOV.Y = 2 * UKismetMathLibrary::Atan(UKismetMathLibrary::Tan(ExternalCameraFOV.X * UKismetMathLibrary::GetPI() / 180 / 2) * 9 / 16) * 180 / UKismetMathLibrary::GetPI();
+	//Assuming 16:9 aspect ratio (which it is by default). Formula from https://www.reddit.com/r/Planetside/comments/1xl1z5/brief_table_for_calculating_fieldofview_vertical/ but also other places on the internet
+
 }
 
-// Called every frame
 void AVRPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//Keeping the actor location the same as the player location. Maybe turn into a seperate function later?
-	FVector NewCameraOffset = HeadsetCamera->GetComponentLocation() - GetActorLocation();
-	NewCameraOffset.X -= 10;
-	AddActorWorldOffset(NewCameraOffset);
-	VRRoot->AddWorldOffset(-NewCameraOffset);
+	UpdateActorLocation();
 
-	UpdateEyeTrackInfo();
-
+	UpdateEyeTrackLocation();
 }
 
 // Called to bind functionality to input
@@ -88,32 +87,42 @@ FVector2D AVRPawn::GetGazeLocationOnScreen() const
 {
 	FVector EyeTrackOrigin, EyeTrackDirection;
 
-	if (!USRanipal_FunctionLibrary_Eye::GetGazeRay(GazeIndex::COMBINE, EyeTrackOrigin, EyeTrackDirection)) return FVector2D();
 	if (!ensure(ExternalCamera)) return FVector2D();
+	if (!GetCombinedGazeRay(EyeTrackOrigin, EyeTrackDirection)) return FVector2D();
 
-	// Getting the field of view of the external camera
-	float FOVx = ExternalCamera->FOVAngle;
-	float FOVy = 2 * UKismetMathLibrary::Atan(UKismetMathLibrary::Tan(FOVx * UKismetMathLibrary::GetPI() / 180 / 2) * 9 / 16) * 180 / UKismetMathLibrary::GetPI();	//Assuming 16:9 aspect ratio (which it is by default). Formula provided by: https://www.reddit.com/r/Planetside/comments/1xl1z5/brief_table_for_calculating_fieldofview_vertical/
-
-	FVector RelativePosition = EyeTrackOrigin + 1000*EyeTrackDirection;		//Assuming that ExternalCamera has the same transform as HeadsetCamera
-	FRotator RelativeAngle = RelativePosition.Rotation();
-
-	// Rotation in Z corresponds to x on screen, Y rotation corresponds to Y
+	FRotator RelativeAngle = (EyeTrackOrigin + 1000 * EyeTrackDirection).Rotation();	//Assuming that ExternalCamera has the same transform as HeadsetCamera
 	FVector2D ScreenLocation;
 	
-	//Convert to UV coords
-	ScreenLocation.X = 0.5 + (RelativeAngle.Yaw / (FOVx * 1.11));
-	ScreenLocation.Y = 0.5 - (1.11 * RelativeAngle.Pitch / (FOVy));		//Not sure why the extra correction is needed; maybe I have something wrong
-
-	// TODO: Remove
-	// UE_LOG(LogTemp, Warning, TEXT("Roll: %f, Pitch: %f, Yaw: %f    hFOV: %f, vFOV: %f    UVx: %f, UVy: %f"), RelativeAngle.Roll, RelativeAngle.Pitch, RelativeAngle.Yaw, FOVx, FOVy, ScreenLocation.X, ScreenLocation.Y);
+	// Calculate UV location
+	ScreenLocation.X = 0.5 + (RelativeAngle.Yaw / (ExternalCameraFOV.X * 1.275));
+	ScreenLocation.Y = 0.5 - (RelativeAngle.Pitch / (ExternalCameraFOV.Y * 1.05));			//Not sure why the extra corrections are needed; maybe I have something wrong
 
 	return ScreenLocation;
 }
 
-void AVRPawn::UpdateEyeTrackInfo() {
+bool AVRPawn::GetCombinedGazeRay(FVector& EyeTrackOrigin, FVector& EyeTrackDirection) const
+{
+	if (USRanipal_FunctionLibrary_Eye::GetGazeRay(GazeIndex::COMBINE, EyeTrackOrigin, EyeTrackDirection)) {
+		return true;
+	} else if (USRanipal_FunctionLibrary_Eye::GetGazeRay(GazeIndex::LEFT, EyeTrackOrigin, EyeTrackDirection)) {
+		return true;
+	} else if (USRanipal_FunctionLibrary_Eye::GetGazeRay(GazeIndex::RIGHT, EyeTrackOrigin, EyeTrackDirection)) {
+		return true;
+	} else return false;
+}
+
+void AVRPawn::UpdateActorLocation()
+{
+	FVector NewCameraOffset = HeadsetCamera->GetComponentLocation() - GetActorLocation();
+	NewCameraOffset.X -= 10;
+	AddActorWorldOffset(NewCameraOffset);
+	VRRoot->AddWorldOffset(-NewCameraOffset);
+}
+
+void AVRPawn::UpdateEyeTrackLocation()
+{
 	FVector2D TwoDCoordinates = GetGazeLocationOnScreen();
 	DynamicPPM->SetVectorParameterValue(TEXT("Centre Coordinates"), FLinearColor(TwoDCoordinates.X, TwoDCoordinates.Y, 0.f, 0.f));
 
-	DynamicPPM->SetScalarParameterValue(TEXT("Radius"), 0.03f);
+	// DynamicPPM->SetScalarParameterValue(TEXT("Radius"), 0.03f);		// In case uncertainty is added later to control the radius
 }
