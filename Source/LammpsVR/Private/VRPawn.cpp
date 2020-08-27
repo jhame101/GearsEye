@@ -74,15 +74,11 @@ void AVRPawn::Tick(float DeltaTime)
 	UpdateActorLocation();
 
 	UpdateEyeTrackLocation();
+
+	MoveSmoothly(DeltaTime);
 }
 
-// Called to bind functionality to input
-void AVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
+#pragma region EyeTracking
 FVector2D AVRPawn::GetGazeLocationOnScreen() const
 {
 	FVector EyeTrackOrigin, EyeTrackDirection;
@@ -111,14 +107,6 @@ bool AVRPawn::GetCombinedGazeRay(FVector& EyeTrackOrigin, FVector& EyeTrackDirec
 	} else return false;
 }
 
-void AVRPawn::UpdateActorLocation()
-{
-	FVector NewCameraOffset = HeadsetCamera->GetComponentLocation() - GetActorLocation();
-	NewCameraOffset.X -= 10;
-	AddActorWorldOffset(NewCameraOffset);
-	VRRoot->AddWorldOffset(-NewCameraOffset);
-}
-
 void AVRPawn::UpdateEyeTrackLocation()
 {
 	FVector2D TwoDCoordinates = GetGazeLocationOnScreen();
@@ -126,3 +114,50 @@ void AVRPawn::UpdateEyeTrackLocation()
 
 	// DynamicPPM->SetScalarParameterValue(TEXT("Radius"), 0.03f);		// In case uncertainty is added later to control the radius
 }
+#pragma endregion EyeTracking
+
+void AVRPawn::UpdateActorLocation()		// Makes sure that the actor is at the same place as the VR headset despite translation from the physical movement of the headset in the play space
+{
+	FVector NewCameraOffset = HeadsetCamera->GetComponentLocation() - GetActorLocation();
+	NewCameraOffset.X -= 10;
+	AddActorWorldOffset(NewCameraOffset);
+	VRRoot->AddWorldOffset(-NewCameraOffset);
+}
+
+#pragma region Input
+void AVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAxis("RightTriggerAxis", this, &AVRPawn::SetRightTriggerAxis);
+	PlayerInputComponent->BindAxis("LeftTriggerAxis", this, &AVRPawn::SetLeftTriggerAxis);
+
+	PlayerInputComponent->BindAction("Move", IE_Pressed, this, &AVRPawn::MovePressed);
+	PlayerInputComponent->BindAction("Move", IE_Released, this, &AVRPawn::MoveReleased);
+
+	PlayerInputComponent->BindAction("RightTeleport", IE_Pressed, this, &AVRPawn::RightTeleport);
+	PlayerInputComponent->BindAction("LeftTeleport", IE_Pressed, this, &AVRPawn::LeftTeleport);
+
+
+}
+
+void AVRPawn::RightTeleport()
+{
+	FVector Displacement = Laser_R->GetUpVector() * TeleportDistance;
+	AddActorWorldOffset(Displacement, true);
+}
+
+void AVRPawn::LeftTeleport()
+{
+	FVector Displacement = Laser_L->GetUpVector() * TeleportDistance;
+	AddActorWorldOffset(Displacement, true);
+}
+
+void AVRPawn::MoveSmoothly(float DeltaTime)
+{
+	if (!Move) return;
+	FVector Displacement = (RightTriggerAxis * Laser_R->GetUpVector() + LeftTriggerAxis * Laser_L->GetUpVector()) * MovementScalingFactor * DeltaTime;
+	AddActorWorldOffset(Displacement, true);
+}
+
+#pragma endregion Input

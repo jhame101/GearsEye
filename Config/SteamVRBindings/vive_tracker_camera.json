@@ -14,7 +14,7 @@
 					{
 						"click":
 						{
-							"output": "/actions/main/in/LeftTrigger"
+							"output": "/actions/main/in/LeftTeleport"
 						}
 					}
 				},
@@ -25,7 +25,7 @@
 					{
 						"click":
 						{
-							"output": "/actions/main/in/RightTrigger"
+							"output": "/actions/main/in/RightTeleport"
 						}
 					}
 				},
@@ -48,6 +48,28 @@
 						"click":
 						{
 							"output": "/actions/main/in/Pause"
+						}
+					}
+				},
+				{
+					"mode": "button",
+					"path": "/user/hand/left/input/grip",
+					"inputs":
+					{
+						"click":
+						{
+							"output": "/actions/main/in/Move"
+						}
+					}
+				},
+				{
+					"mode": "button",
+					"path": "/user/hand/right/input/grip",
+					"inputs":
+					{
+						"click":
+						{
+							"output": "/actions/main/in/Move"
 						}
 					}
 				},

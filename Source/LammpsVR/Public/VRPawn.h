@@ -60,22 +60,46 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* Laser_R;
 
-	UPROPERTY(EditAnywhere)
+protected:
+	FVector2D GetGazeLocationOnScreen() const;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UMaterialInterface* PostProcessMaterial;
 
-	// Private member variables
+	// Movement
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float TeleportDistance = 5000.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float MovementScalingFactor = 10000.f;
+
+	// Input variables
+	UPROPERTY(BlueprintReadOnly)
+	float RightTriggerAxis = 0.f;
+	UPROPERTY(BlueprintReadOnly)
+	float LeftTriggerAxis = 0.f;
+	UPROPERTY(BlueprintReadOnly)
+	int Move = 0;		//Int rather than bool in case both are pressed at once. It should be treated as a bool (but keep in mind that it could be up to 2)
+
+private:
+	// Input functions
+	void RightTeleport();
+	void LeftTeleport();
+
+	//Boring input functions
+	void SetRightTriggerAxis(float Value) { RightTriggerAxis = Value; }
+	void SetLeftTriggerAxis(float Value) { LeftTriggerAxis = Value; }
+
+	void MovePressed() { ++Move; }
+	void MoveReleased() { --Move; }
+
+	//Internal variables
 	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicPPM;
 	FVector2D ExternalCameraFOV;
 
-
-	void UpdateActorLocation();
-
+	//Internal functions
 	bool GetCombinedGazeRay(FVector& EyeTrackOrigin, FVector& EyeTrackDirection) const;
-
+	void UpdateActorLocation();
 	void UpdateEyeTrackLocation();
-
-protected:
-	FVector2D GetGazeLocationOnScreen() const;
-
+	void MoveSmoothly(float DeltaTime);
 };

@@ -1,4 +1,5 @@
 
+
 # GEARS in Unreal Engine 4.25 (with LAMMPS and eye tracking)
 
 Note: This is a fork of [USCCACS/GEARS](https://github.com/USCCACS/GEARS/) to add eye tracking for the HTC VIVE Pro Eye. Note that this version uses UE4.25 instead of 4.16.
@@ -48,7 +49,7 @@ GEARS is a program that visualizes the molecular dynamics library [LAMMPS](http:
 4. Press the "Play - VR Preview" option in the top window, and put on the headset.
 
 ### Controls:
-  Using motion controller, point green laser in direction that you want to move. Press either the right or left trigger buttons on the motion controllers to move in the direction that controller's green laser is pointing.
+  Using motion controller, point green laser in direction that you want to move. Press either the right or left trigger buttons on the motion controllers to teleport in the direction that controller's green laser is pointing. To move more slowly, hold the grip button and push the trigger in (but not all the way).
 
   To pause the simulation (whether real time or animation), click the circular directional pad.
 

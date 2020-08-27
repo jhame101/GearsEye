@@ -78,23 +78,19 @@
 			"requirement": "optional"
 		},
 		{
-			"name": "/actions/main/in/Pause_L",
+			"name": "/actions/main/in/LeftTeleport",
 			"type": "boolean"
 		},
 		{
-			"name": "/actions/main/in/Pause_R",
-			"type": "boolean"
-		},
-		{
-			"name": "/actions/main/in/LeftTrigger",
-			"type": "boolean"
-		},
-		{
-			"name": "/actions/main/in/RightTrigger",
+			"name": "/actions/main/in/RightTeleport",
 			"type": "boolean"
 		},
 		{
 			"name": "/actions/main/in/Pause",
+			"type": "boolean"
+		},
+		{
+			"name": "/actions/main/in/Move",
 			"type": "boolean"
 		},
 		{
@@ -220,11 +216,10 @@
 			"/actions/main/out/vibrateleft": "Haptic (Left)",
 			"/actions/main/out/vibrateright": "Haptic (Right)",
 			"/actions/main/in/open_console": "Open Console",
-			"/actions/main/in/Pause_L": "Pause_L",
-			"/actions/main/in/Pause_R": "Pause_R",
-			"/actions/main/in/LeftTrigger": "LeftTrigger",
-			"/actions/main/in/RightTrigger": "RightTrigger",
+			"/actions/main/in/LeftTeleport": "LeftTeleport",
+			"/actions/main/in/RightTeleport": "RightTeleport",
 			"/actions/main/in/Pause": "Pause",
+			"/actions/main/in/Move": "Move",
 			"/actions/main/in/RightTriggerAxis axis": "RightTriggerAxis",
 			"/actions/main/in/LeftTriggerAxis axis": "LeftTriggerAxis",
 			"/actions/main": "Main Game Actions"
