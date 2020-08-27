@@ -72,25 +72,34 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float MovementScalingFactor = 10000.f;
 
+	UPROPERTY(EditDefaultsOnly)
+	// TSubclassOf<AActor> MenuActor;
+	UClass* MenuActor;
+
 	// Input variables
 	UPROPERTY(BlueprintReadOnly)
 	float RightTriggerAxis = 0.f;
 	UPROPERTY(BlueprintReadOnly)
 	float LeftTriggerAxis = 0.f;
 	UPROPERTY(BlueprintReadOnly)
-	int Move = 0;		//Int rather than bool in case both are pressed at once. It should be treated as a bool (but keep in mind that it could be up to 2)
+	int bMovePressed = 0;		//Int rather than bool in case both are pressed at once. It should be treated as a bool (but keep in mind that it could be up to 2)
+
+	bool bMenuActive() { return (bool)ActiveMenuActor; }
+	AActor* ActiveMenuActor;
 
 private:
 	// Input functions
 	void RightTeleport();
 	void LeftTeleport();
 
+	void ToggleMenu();
+
 	//Boring input functions
 	void SetRightTriggerAxis(float Value) { RightTriggerAxis = Value; }
 	void SetLeftTriggerAxis(float Value) { LeftTriggerAxis = Value; }
 
-	void MovePressed() { ++Move; }
-	void MoveReleased() { --Move; }
+	void MovePressed() { ++bMovePressed; }
+	void MoveReleased() { --bMovePressed; }
 
 	//Internal variables
 	UPROPERTY()

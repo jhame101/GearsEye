@@ -94,6 +94,10 @@
 			"type": "boolean"
 		},
 		{
+			"name": "/actions/main/in/Menu",
+			"type": "boolean"
+		},
+		{
 			"name": "/actions/main/in/RightTriggerAxis axis",
 			"type": "vector1"
 		},
@@ -220,6 +224,7 @@
 			"/actions/main/in/RightTeleport": "RightTeleport",
 			"/actions/main/in/Pause": "Pause",
 			"/actions/main/in/Move": "Move",
+			"/actions/main/in/Menu": "Menu",
 			"/actions/main/in/RightTriggerAxis axis": "RightTriggerAxis",
 			"/actions/main/in/LeftTriggerAxis axis": "LeftTriggerAxis",
 			"/actions/main": "Main Game Actions"

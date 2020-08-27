@@ -138,26 +138,46 @@ void AVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("RightTeleport", IE_Pressed, this, &AVRPawn::RightTeleport);
 	PlayerInputComponent->BindAction("LeftTeleport", IE_Pressed, this, &AVRPawn::LeftTeleport);
 
+	PlayerInputComponent->BindAction("Menu", IE_Pressed, this, &AVRPawn::ToggleMenu);
+
 
 }
 
 void AVRPawn::RightTeleport()
 {
+	if (bMenuActive()) return;
 	FVector Displacement = Laser_R->GetUpVector() * TeleportDistance;
 	AddActorWorldOffset(Displacement, true);
 }
 
 void AVRPawn::LeftTeleport()
 {
+	if (bMenuActive()) return;
 	FVector Displacement = Laser_L->GetUpVector() * TeleportDistance;
 	AddActorWorldOffset(Displacement, true);
 }
 
 void AVRPawn::MoveSmoothly(float DeltaTime)
 {
-	if (!Move) return;
+	if (!bMovePressed || bMenuActive()) return;
 	FVector Displacement = (RightTriggerAxis * Laser_R->GetUpVector() + LeftTriggerAxis * Laser_L->GetUpVector()) * MovementScalingFactor * DeltaTime;
 	AddActorWorldOffset(Displacement, true);
 }
 
+void AVRPawn::ToggleMenu()
+{
+	if (ActiveMenuActor) {
+		ActiveMenuActor->Destroy();
+		ActiveMenuActor = nullptr;
+		// Disable WidgetInputComponents
+	}
+	else
+	{
+		if (!ensure(MenuActor)) return;
+		FVector Location = GetActorLocation();
+		FRotator Rotation = FRotator(0.f, HeadsetCamera->GetComponentRotation().Yaw, 0.f);
+		FActorSpawnParameters SpawnParams;
+		// ActiveMenuActor = GetWorld()->SpawnActor(MenuActor, FTransform(Location, Rotation, FVector(1)), SpawnParams);
+	}
+}
 #pragma endregion Input
