@@ -94,7 +94,19 @@
 			"type": "boolean"
 		},
 		{
-			"name": "/actions/main/in/Menu",
+			"name": "/actions/main/in/LeftMenu",
+			"type": "boolean"
+		},
+		{
+			"name": "/actions/main/in/RightMenu",
+			"type": "boolean"
+		},
+		{
+			"name": "/actions/main/in/Click_L",
+			"type": "boolean"
+		},
+		{
+			"name": "/actions/main/in/Click_R",
 			"type": "boolean"
 		},
 		{
@@ -224,7 +236,10 @@
 			"/actions/main/in/RightTeleport": "RightTeleport",
 			"/actions/main/in/Pause": "Pause",
 			"/actions/main/in/Move": "Move",
-			"/actions/main/in/Menu": "Menu",
+			"/actions/main/in/LeftMenu": "LeftMenu",
+			"/actions/main/in/RightMenu": "RightMenu",
+			"/actions/main/in/Click_L": "Click_L",
+			"/actions/main/in/Click_R": "Click_R",
 			"/actions/main/in/RightTriggerAxis axis": "RightTriggerAxis",
 			"/actions/main/in/LeftTriggerAxis axis": "LeftTriggerAxis",
 			"/actions/main": "Main Game Actions"

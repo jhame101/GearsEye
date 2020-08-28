@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Components/SpotLightComponent.h"
+#include "Components/WidgetInteractionComponent.h"
 #include "Engine/World.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -38,6 +39,14 @@ AVRPawn::AVRPawn()
 
 	ViveController_L = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Left Vive Controller"));
 	ViveController_L->SetupAttachment(VRRoot);
+	ViveController_L->SetTrackingSource(EControllerHand::Left);
+
+	InteractionComponent_L = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("Left Interaction Component"));
+	InteractionComponent_L->SetupAttachment(ViveController_L);
+	InteractionComponent_L->bShowDebug = true;
+	InteractionComponent_L->bAutoActivate = false;
+	InteractionComponent_L->InteractionDistance = 1200;
+
 
 	Laser_L = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Left Laser"));
 	Laser_L->SetupAttachment(ViveController_L);
@@ -45,6 +54,14 @@ AVRPawn::AVRPawn()
 
 	ViveController_R = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Right Vive Controller"));
 	ViveController_R->SetupAttachment(VRRoot);
+	ViveController_R->SetTrackingSource(EControllerHand::Right);
+
+	InteractionComponent_R = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("RIght Interaction Component"));
+	InteractionComponent_R->SetupAttachment(ViveController_R);
+	InteractionComponent_R->bShowDebug = true;
+	InteractionComponent_R->bAutoActivate = false;
+	InteractionComponent_R->InteractionDistance = 1200;
+
 
 	Laser_R = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Right Laser"));
 	Laser_R->SetupAttachment(ViveController_R);
@@ -138,7 +155,13 @@ void AVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("RightTeleport", IE_Pressed, this, &AVRPawn::RightTeleport);
 	PlayerInputComponent->BindAction("LeftTeleport", IE_Pressed, this, &AVRPawn::LeftTeleport);
 
-	PlayerInputComponent->BindAction("Menu", IE_Pressed, this, &AVRPawn::ToggleMenu);
+	PlayerInputComponent->BindAction("RightMenu", IE_Pressed, this, &AVRPawn::RightMenu);
+	PlayerInputComponent->BindAction("LeftMenu", IE_Pressed, this, &AVRPawn::LeftMenu);
+
+	PlayerInputComponent->BindAction("Click_R", IE_Pressed, this, &AVRPawn::RClickPressed);
+	PlayerInputComponent->BindAction("Click_L", IE_Pressed, this, &AVRPawn::LClickPressed);
+	PlayerInputComponent->BindAction("Click_R", IE_Released, this, &AVRPawn::RClickReleased);
+	PlayerInputComponent->BindAction("Click_L", IE_Released, this, &AVRPawn::LClickReleased);
 
 
 }
@@ -164,12 +187,16 @@ void AVRPawn::MoveSmoothly(float DeltaTime)
 	AddActorWorldOffset(Displacement, true);
 }
 
-void AVRPawn::ToggleMenu()
+void AVRPawn::ToggleMenu(const EControllerHand& Hand)
 {
 	if (ActiveMenuActor) {
 		ActiveMenuActor->Destroy();
 		ActiveMenuActor = nullptr;
-		// Disable WidgetInputComponents
+
+		InteractionComponent_L->Deactivate();
+		InteractionComponent_R->Deactivate();
+		Laser_L->SetVisibility(true);
+		Laser_R->SetVisibility(true);
 	}
 	else
 	{
@@ -177,7 +204,31 @@ void AVRPawn::ToggleMenu()
 		FVector Location = GetActorLocation();
 		FRotator Rotation = FRotator(0.f, HeadsetCamera->GetComponentRotation().Yaw, 0.f);
 		FActorSpawnParameters SpawnParams;
-		// ActiveMenuActor = GetWorld()->SpawnActor(MenuActor, FTransform(Location, Rotation, FVector(1)), SpawnParams);
+		ActiveMenuActor = GetWorld()->SpawnActor(MenuActor);
+		ActiveMenuActor->SetActorTransform(FTransform(Rotation, Location, FVector(1)));
+
+		Laser_L->SetVisibility(false);
+		Laser_R->SetVisibility(false);
+		switch (Hand) {
+		case EControllerHand::Left:
+			InteractionComponent_L->Activate();
+			break;
+		case EControllerHand::Right:
+			InteractionComponent_R->Activate();
+			break;
+		default:
+			InteractionComponent_L->Activate();
+			InteractionComponent_R->Activate();
+		}
+
 	}
 }
+
+#pragma region BoringInput
+void AVRPawn::RClickPressed() { InteractionComponent_R->PressPointerKey(EKeys::LeftMouseButton); }
+void AVRPawn::LClickPressed() { InteractionComponent_L->PressPointerKey(EKeys::LeftMouseButton); }
+void AVRPawn::RClickReleased() { InteractionComponent_R->ReleasePointerKey(EKeys::LeftMouseButton); }
+void AVRPawn::LClickReleased() { InteractionComponent_L->ReleasePointerKey(EKeys::LeftMouseButton); }
+#pragma endregion BoringInput
+
 #pragma endregion Input

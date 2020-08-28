@@ -80,7 +80,7 @@
 					{
 						"click":
 						{
-							"output": "/actions/main/in/Menu"
+							"output": "/actions/main/in/LeftMenu"
 						}
 					}
 				},
@@ -91,7 +91,29 @@
 					{
 						"click":
 						{
-							"output": "/actions/main/in/Menu"
+							"output": "/actions/main/in/RightMenu"
+						}
+					}
+				},
+				{
+					"mode": "trigger",
+					"path": "/user/hand/left/input/trigger",
+					"inputs":
+					{
+						"click":
+						{
+							"output": "/actions/main/in/Click_L"
+						}
+					}
+				},
+				{
+					"mode": "trigger",
+					"path": "/user/hand/right/input/trigger",
+					"inputs":
+					{
+						"click":
+						{
+							"output": "/actions/main/in/Click_R"
 						}
 					}
 				},

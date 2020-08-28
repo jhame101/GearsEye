@@ -12,6 +12,7 @@ class USpotLightComponent;
 class UCapsuleComponent;
 class UCameraComponent;
 class UMotionControllerComponent;
+class UWidgetInteractionComponent;
 
 UCLASS()
 class LAMMPSVR_API AVRPawn : public APawn
@@ -27,6 +28,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleMenu(const EControllerHand& Hand);
 
 private:
 	// Components
@@ -52,10 +56,16 @@ private:
 	UMotionControllerComponent* ViveController_L;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UWidgetInteractionComponent* InteractionComponent_L;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* Laser_L;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UMotionControllerComponent* ViveController_R;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UWidgetInteractionComponent* InteractionComponent_R;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* Laser_R;
@@ -72,9 +82,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float MovementScalingFactor = 10000.f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	// TSubclassOf<AActor> MenuActor;
-	UClass* MenuActor;
+	TSubclassOf<AActor> MenuActor;
 
 	// Input variables
 	UPROPERTY(BlueprintReadOnly)
@@ -92,14 +102,20 @@ private:
 	void RightTeleport();
 	void LeftTeleport();
 
-	void ToggleMenu();
-
 	//Boring input functions
 	void SetRightTriggerAxis(float Value) { RightTriggerAxis = Value; }
 	void SetLeftTriggerAxis(float Value) { LeftTriggerAxis = Value; }
 
 	void MovePressed() { ++bMovePressed; }
 	void MoveReleased() { --bMovePressed; }
+
+	void RightMenu() { ToggleMenu(EControllerHand::Right); }
+	void LeftMenu() { ToggleMenu(EControllerHand::Left); }
+
+	void RClickPressed();
+	void LClickPressed();
+	void RClickReleased();
+	void LClickReleased();
 
 	//Internal variables
 	UPROPERTY()
