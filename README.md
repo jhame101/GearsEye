@@ -2,7 +2,7 @@
 
 # GEARS in Unreal Engine 4.25 (with LAMMPS and eye tracking)
 
-Note: This is a fork of [USCCACS/GEARS](https://github.com/USCCACS/GEARS/) to add eye tracking for the HTC VIVE Pro Eye. Note that this version uses UE4.25 instead of 4.16.
+This is a fork of [USCCACS/GEARS](https://github.com/USCCACS/GEARS/) to add eye tracking for the HTC VIVE Pro Eye. Note that this version uses UE4.25 instead of 4.16.
 
 <div align="center">
      <img src="./README-images/Demo3.png" width=90%/>
@@ -10,7 +10,7 @@ Note: This is a fork of [USCCACS/GEARS](https://github.com/USCCACS/GEARS/) to ad
 
 ## Overview
 
-GEARS is a program that visualizes the molecular dynamics library [LAMMPS](http://lammps.sandia.gov/), developed by [Sandia National Laboratories](http://www.sandia.gov/), in virtual reality. Because of this, it offers the ability to run custom LAMMPS scripts and also comes with a few demos. Look at [USCCACS/GEARS](https://github.com/USCCACS/GEARS/) for more GEARS-specific information. This fork, which works with the HTC VIVE Pro Eye headset, adds a circle on top of the preview window that shows where the user is looking.
+GEARS is a program that visualizes the molecular dynamics library [LAMMPS](http://lammps.sandia.gov/), developed by [Sandia National Laboratories](http://www.sandia.gov/), in virtual reality. Because of this, it offers the ability to run custom LAMMPS scripts and also comes with a few demos. Look at [USCCACS/GEARS](https://github.com/USCCACS/GEARS/) for more GEARS-specific information. This fork, which works with the HTC VIVE Pro Eye headset, adds a circle on top of the preview window that shows where the user is looking. There are also some other additions, such as a menu that can be used to switch levels without using the keyboard, smooth movement (rather than just teleportation), and a pawn written in C++ rather than purely Blueprint. The simulation in the original GEARS and in this fork should be exactly the same.
 
 ## System Requirements
 * [HTC VIVE Pro Eye](https://www.vive.com/eu/product/vive-pro-eye/overview/) with Motion Controllers
@@ -45,15 +45,18 @@ GEARS is a program that visualizes the molecular dynamics library [LAMMPS](http:
 ## How to use LammpsVR Editor
 1. Start LammpsVR.uproject using Unreal Editor 4.25. Ensure that SteamVR has also started and all equipment (Vive Pro Eye, controllers) is connected
 2. Start the SR_Runtime application as administrator
-3. In the Content Browser, go to Levels/Demo1-RealtimeSim/ for real time simulation demos. Alternatively, just use the default level and try other ones using number keys.
+3. In the Content Browser, go to Levels/Demo1-RealtimeSim/ for real time simulation demos. Alternatively, just use the default level and try other ones using number keys or the menu.
 4. Press the "Play - VR Preview" option in the top window, and put on the headset.
+* If you skip step 2, the SR_Runtime will try to start itself as soon as you click play. In this case, take off the headset and allow it.
 
 ### Controls:
-  Using motion controller, point green laser in direction that you want to move. Press either the right or left trigger buttons on the motion controllers to teleport in the direction that controller's green laser is pointing. To move more slowly, hold the grip button and push the trigger in (but not all the way).
+  Using motion controller, point green laser in direction that you want to move. Press either the right or left trigger buttons on the motion controllers to teleport in the direction that controller's green laser is pointing. To move more slowly, hold the grip button and push the trigger in partially.
 
   To pause the simulation (whether real time or animation), click the circular directional pad.
 
-  To exit your current level, press the ESC key on the keyboard.
+Press the menu button at any time to open a menu that lets you open another demo or exit the game.
+
+In order to capture the eye track data, an external screen recorder such as [Captura](https://mathewsachin.github.io/Captura/) is recommended (make sure that the user knows that they're being eye tracked and how their information will be used).
 
 ### How to customize LammpsVR levels
 
@@ -64,7 +67,7 @@ GEARS is a program that visualizes the molecular dynamics library [LAMMPS](http:
   
       *Some LAMMPS commands may not work depending on what they do. For example, if the LAMMPS command requires a specific amount of CPUs, or references an MPI related command for example, they could cause the simulation to stall. Refer to the LAMMPS script we have provided for all tested LAMMPS commands.*
 
-  3. Select a demo level as before, then select the BP_LammpsController in the **World Outlier** window. Go to its details in the **Details** window (pictured below).
+  3. Copy a demo level, then select the BP_LammpsController in the **World Outlier** window. Go to its details in the **Details** window (pictured below).
 
   <div align="center">
        <img src="./README-images/customizationUi.png" width=40%/>
@@ -72,7 +75,9 @@ GEARS is a program that visualizes the molecular dynamics library [LAMMPS](http:
 
   4. Fill out the *Lammps*, *Animation*, and *Particle Management* sections in the window with references to your custom LAMMPS scripts withing the LammpsResource/ directory. This includes file paths, particle number to size and color associations, and even a choice to turn on animation mode. If animation mode is selected, be sure to include details about the animations time step files in the *Animation* section. All time step files must be in the LAMMPS DUMMP format. Additionally, the input script needs to be set up in a particular way. We will post a guide to this soon, so for now refer to our LAMMPS script, *LammpsResource/Scripts/Fracture/rerunscript.in*, as an example.
 
-  5. Press Play.
+  5. To add the new level to the menu, open Content/Blueprints/Player/Menu/WBP_PopupMenu and add a button (you can just copy one of the existing ones). Optionally change the name of the button and text box as well as the text in the text box to the name of the level you created. Then, select the button you've just added, scroll to the bottom of the details panel (right), and add an OnClicked binding (press the big green + button next to "On Clicked"). Add an Open Level block with a literal name going into it (see the other level opening scripts for reference). Finally, add the exact name of the level you edited in the previous step to the text box in the literal name block.
+ 
+  6. Press Play.
 
 ### Extra LAMMPS Input Script Rules reiterated:
   * The current working directory gets set to the LammpsVR/Content/LammpsResource/. Therefore, if a LAMMPS input script references another file, the path to that file must start from the LammpsResource directory.
